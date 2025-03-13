@@ -3,34 +3,20 @@
 # SPDX-FileCopyrightText: 2025 The Linux Foundation
 -->
 
-# 🛠️ Template Action
+# 🛠️ Python Project Metadata
 
-This is a template for the other actions in this repository.
+Extracts Python project metadata from a repository.
 
-## actions-template
+## python-project-metadata-action
 
 ## Usage Example
 
-<!-- markdownlint-disable MD046 -->
-
-```yaml
-steps:
-  - name: "Action template"
-    id: action-template
-    uses: lfreleng-actions/actions-template@main
-    with:
-      input: "placeholder"
-```
-
-<!-- markdownlint-enable MD046 -->
-
-## Inputs
-
 <!-- markdownlint-disable MD013 -->
 
-| Variable Name | Required | Description  |
-| ------------- | -------- | ------------ |
-| INPUT         | False    | Action input |
+```yaml
+  - name: "Get Python project metadata"
+    uses: lfreleng-actions/python-project-metadata-action@main
+```
 
 <!-- markdownlint-enable MD013 -->
 
@@ -38,12 +24,19 @@ steps:
 
 <!-- markdownlint-disable MD013 -->
 
-| Variable Name | Description   |
-| ------------- | ------------- |
-| OUTPUT        | Action output |
+| Variable Name         | Description                                              |
+| --------------------- | -------------------------------------------------------- |
+| PYTHON_PROJECT_FILE   | File used to define/describe the project                 |
+| PYTHON_PROJECT_NAME   | The name of the Python project                           |
+| PYTHON_PACKAGE_NAME   | The name of the Python package                           |
+| PROJECT_MATCH_PACKAGE | Set true when the project and package name match         |
+| PROJECT_MATCH_REPO    | Set true when the project name and repository name match |
+| VERSIONING_TYPE       | Can be either static or dynamic (determined by tags)     |
+| BUILD_PYTHON          | Most recent Python version supported by project          |
+| MATRIX_JSON           | All Python versions supported by project as JSON string  |
 
 <!-- markdownlint-enable MD013 -->
 
-## Implementation Details
+Python package names can be different from project names.
 
-## Other Notes
+Note: dashes in the project name typically get replaced with underscores
