@@ -41,7 +41,7 @@ runs:
     - name: "Extract Python project naming"
       id: project-naming
       # yamllint disable-line rule:line-length
-      uses: lfit/releng-reusable-workflows/.github/actions/python-project-name-action@1d327501514102db5018642036a974e79415ec5a # v0.2.8
+      uses: lfit/releng-reusable-workflows/.github/actions/python-project-name-action@9b845102d5158f0b80bd53405a0b6855b26dc4a0 # v0.2.9
 
     - name: "Compare project and package/repository names"
       id: compare
@@ -76,7 +76,7 @@ runs:
       if: steps.project-toml.outputs.type == 'file'
       id: dynamic-versioning
       # yamllint disable-line rule:line-length
-      uses: lfit/releng-reusable-workflows/.github/actions/python-dynamic-version-action@1d327501514102db5018642036a974e79415ec5a # v0.2.8
+      uses: lfit/releng-reusable-workflows/.github/actions/python-dynamic-version-action@9b845102d5158f0b80bd53405a0b6855b26dc4a0 # v0.2.9
 
     - name: "Get project supported Python versions"
       id: supported-python-versions
