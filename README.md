@@ -20,6 +20,14 @@ Extracts Python project metadata from a repository.
 
 <!-- markdownlint-enable MD013 -->
 
+##  Inputs
+
+<!-- markdownlint-disable MD013 -->
+
+| Variable Name       | Required | Description                           |
+| ------------------- | -------- | ------------------------------------- |
+| PATH_PREFIX         | False    | Path/directory to Python project code |
+
 ## Outputs
 
 <!-- markdownlint-disable MD013 -->

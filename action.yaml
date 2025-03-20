@@ -6,6 +6,13 @@
 name: "🛠️ Python Project Metadata"
 description: "Extracts Python project metadata from repository"
 
+inputs:
+  # Optional
+  PATH_PREFIX:
+    description: "Directory location containing project code"
+    type: string
+    required: false
+    default: ""
 outputs:
   # Enumerated values
   PYTHON_PROJECT_FILE:
@@ -41,7 +48,9 @@ runs:
     - name: "Extract Python project naming"
       id: project-naming
       # yamllint disable-line rule:line-length
-      uses: lfit/releng-reusable-workflows/.github/actions/python-project-name-action@9b845102d5158f0b80bd53405a0b6855b26dc4a0 # v0.2.9
+      uses: lfreleng-actions/python-project-name-action@56072b5e9311b06d6be1631f683d397b6d60e48f # v0.1.0
+      with:
+        path_prefix: "${{ inputs.path_prefix }}"
 
     - name: "Compare project and package/repository names"
       id: compare
@@ -76,12 +85,16 @@ runs:
       if: steps.project-toml.outputs.type == 'file'
       id: dynamic-versioning
       # yamllint disable-line rule:line-length
-      uses: lfit/releng-reusable-workflows/.github/actions/python-dynamic-version-action@9b845102d5158f0b80bd53405a0b6855b26dc4a0 # v0.2.9
+      uses: lfreleng-actions/python-dynamic-version-action@6839363c3cf77e3e4f3659bbcc394f64fa8c0566 # v0.1.0
+      with:
+        path_prefix: "${{ inputs.path_prefix }}"
 
     - name: "Get project supported Python versions"
       id: supported-python-versions
       # yamllint disable-line rule:line-length
-      uses: lfreleng-actions/python-supported-versions-action@main # Update to commit SHA later
+      uses: lfreleng-actions/python-supported-versions-action@2466ad0e7e119e5484bb404b84b97253c862991b # v0.1.0
+      with:
+        path_prefix: "${{ inputs.path_prefix }}"
 
     - name: "Display summary output"
       shell: bash
