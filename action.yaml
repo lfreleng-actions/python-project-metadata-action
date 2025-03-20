@@ -48,7 +48,7 @@ runs:
     - name: "Extract Python project naming"
       id: project-naming
       # yamllint disable-line rule:line-length
-      uses: lfreleng-actions/python-project-name-action@56072b5e9311b06d6be1631f683d397b6d60e48f # v0.1.0
+      uses: lfreleng-actions/python-project-name-action@421efafd99bff0a88deca53ab5f67dd6c7d4120d # v0.1.1
       with:
         path_prefix: "${{ inputs.path_prefix }}"
 
@@ -85,7 +85,7 @@ runs:
       if: steps.project-toml.outputs.type == 'file'
       id: dynamic-versioning
       # yamllint disable-line rule:line-length
-      uses: lfreleng-actions/python-dynamic-version-action@6839363c3cf77e3e4f3659bbcc394f64fa8c0566 # v0.1.0
+      uses: lfreleng-actions/python-dynamic-version-action@03442f534ae2b18fd7733f5df2902620ae5d3430 # v0.1.2
       with:
         path_prefix: "${{ inputs.path_prefix }}"
 
