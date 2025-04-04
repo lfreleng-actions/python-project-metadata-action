@@ -12,7 +12,7 @@ inputs:
     description: "Directory location containing project code"
     type: string
     required: false
-    default: ""
+
 outputs:
   # Enumerated values
   PYTHON_PROJECT_FILE:
@@ -45,12 +45,32 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: "Setup action/environment"
+      shell: bash
+      run: |
+        # Setup action/environment
+
+        # Handle path_prefix input consistently and when absent
+        path_prefix="${{ inputs.PATH_PREFIX }}"
+        if [ -z "$path_prefix" ]; then
+          # Set current directory as path prefix
+          path_prefix="."
+        else
+          # Strip any trailing slash in provided path
+          path_prefix="${path_prefix%/}"
+        fi
+        # Verify is a valid directory path
+        if [ ! -d "$path_prefix" ]; then
+          echo "Error: invalid path/prefix to project directory ❌"; exit 1
+        fi
+        echo "path_prefix=$path_prefix" >> "$GITHUB_ENV"
+
     - name: "Extract Python project naming"
       id: project-naming
       # yamllint disable-line rule:line-length
       uses: lfreleng-actions/python-project-name-action@8711a5e8206beb42a73f95460972e2ea80b5f946 # v0.1.3
       with:
-        path_prefix: "${{ inputs.path_prefix }}"
+        path_prefix: "${{ env.path_prefix }}"
 
     - name: "Compare project and package/repository names"
       id: compare
@@ -87,14 +107,14 @@ runs:
       # yamllint disable-line rule:line-length
       uses: lfreleng-actions/python-dynamic-version-action@e5c25ba066cda827a0d9441378d5e587acd238b9 # v0.1.4
       with:
-        path_prefix: "${{ inputs.path_prefix }}"
+        path_prefix: "${{ env.path_prefix }}"
 
     - name: "Get project supported Python versions"
       id: supported-python-versions
       # yamllint disable-line rule:line-length
       uses: lfreleng-actions/python-supported-versions-action@7040daaa69e77cb3fe4dda9d40d88a14b71bc501 # v0.1.3
       with:
-        path_prefix: "${{ inputs.path_prefix }}"
+        path_prefix: "${{ env.path_prefix }}"
 
     - name: "Display summary output"
       shell: bash
