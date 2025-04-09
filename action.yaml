@@ -105,7 +105,7 @@ runs:
       if: steps.project-toml.outputs.type == 'file'
       id: dynamic-versioning
       # yamllint disable-line rule:line-length
-      uses: lfreleng-actions/python-dynamic-version-action@e5c25ba066cda827a0d9441378d5e587acd238b9 # v0.1.4
+      uses: lfreleng-actions/python-dynamic-version-action@f645b6d3c3a64709d598b3cd54d5766a0469fb44 # v0.1.5
       with:
         path_prefix: "${{ env.path_prefix }}"
 
