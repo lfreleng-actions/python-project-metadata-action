@@ -3,135 +3,134 @@
 # SPDX-FileCopyrightText: 2025 The Linux Foundation
 
 # python-project-metadata-action
-name: "🛠️ Python Project Metadata"
-description: "Extracts Python project metadata from repository"
+name: '🛠️ Python Project Metadata'
+description: 'Extracts Python project metadata from repository'
 
 inputs:
   # Optional
-  PATH_PREFIX:
-    description: "Directory location containing project code"
-    type: string
+  path_prefix:
+    description: 'Directory location containing project code'
+    type: 'string'
     required: false
+    default: '.'
 
 outputs:
-  # Enumerated values
-  PYTHON_PROJECT_FILE:
+  python_project_file:
     description: "File used to define/describe the project"
     # Currently supported: pyproject.toml|setup.py
-    value: ${{ steps.project-naming.outputs.python_project_file }}
-  PYTHON_PROJECT_NAME:
+    value: ${{ steps.project-name.outputs.python_project_file }}
+  python_project_name:
     description: "The name of the Python project"
-    value: ${{ steps.project-naming.outputs.python_project_name }}
-  PYTHON_PACKAGE_NAME:
+    value: ${{ steps.project-name.outputs.python_project_name }}
+  python_project_version:
+    description: "The version of the Python project"
+    value: ${{ steps.project-version.outputs.python_project_version }}
+  python_package_name:
     # Note: dashes in the name are replaced with underscores
     description: "The name of the Python package"
-    value: ${{ steps.project-naming.outputs.python_package_name }}
-  PROJECT_MATCH_PACKAGE:
+    value: ${{ steps.project-name.outputs.python_package_name }}
+  project_match_package:
     description: "Set true when the project name and package name match"
     value: ${{ steps.compare.outputs.project_match_package }}
-  PROJECT_MATCH_REPO:
+  project_match_repo:
     description: "Set true when the project name and repository name match"
     value: ${{ steps.compare.outputs.project_match_repo }}
-  VERSIONING_TYPE:
+  versioning_type:
     description: "Project supported Python versions as JSON"
     value: ${{ steps.versioning-type.outputs.versioning_type }}
-  MATRIX_JSON:
+  matrix_json:
     description: "Project supported Python versions as JSON"
     value: ${{ steps.supported-python-versions.outputs.matrix_json }}
-  BUILD_PYTHON_VERSION:
+  build_python_version:
     description: "Python version to use for build (creates artefacts)"
     value: "${{ steps.supported-python-versions.outputs.build_python }}"
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
-    - name: "Setup action/environment"
+    - name: 'Setup action/environment'
       shell: bash
       run: |
         # Setup action/environment
 
-        # Handle path_prefix input consistently and when absent
-        path_prefix="${{ inputs.PATH_PREFIX }}"
-        if [ -z "$path_prefix" ]; then
-          # Set current directory as path prefix
-          path_prefix="."
-        else
-          # Strip any trailing slash in provided path
-          path_prefix="${path_prefix%/}"
+        # Verify path_prefix a valid directory path
+        if [ ! -d "${{ inputs.path_prefix }}" ]; then
+          echo 'Error: invalid path/prefix to project directory ❌'; exit 1
         fi
-        # Verify is a valid directory path
-        if [ ! -d "$path_prefix" ]; then
-          echo "Error: invalid path/prefix to project directory ❌"; exit 1
-        fi
-        echo "path_prefix=$path_prefix" >> "$GITHUB_ENV"
 
-    - name: "Extract Python project naming"
-      id: project-naming
+    - name: 'Extract Python project name'
+      id: project-name
       # yamllint disable-line rule:line-length
       uses: lfreleng-actions/python-project-name-action@8711a5e8206beb42a73f95460972e2ea80b5f946 # v0.1.3
       with:
-        path_prefix: "${{ env.path_prefix }}"
+        path_prefix: "${{ inputs.path_prefix }}"
 
-    - name: "Compare project and package/repository names"
+    - name: 'Extract Python project version'
+      id: project-version
+      # yamllint disable-line rule:line-length
+      uses: modeseven-lfreleng-actions/python-project-version-action@update-action # ToDo: Testing
+      with:
+        path_prefix: "${{ inputs.path_prefix }}"
+
+    - name: 'Compare project and package/repository names'
       id: compare
       shell: bash
       run: |
         # Compare project and package names
-        if [ "${{ steps.project-naming.outputs.python_project_name }}" = \
-          "${{ steps.project-naming.outputs.python_package_name }}" ]; then
-          NAMES_MATCH="true"
-          echo "Project and package names are identical ✅"
+        if [ "${{ steps.project-name.outputs.python_project_name }}" = \
+          "${{ steps.project-name.outputs.python_package_name }}" ]; then
+          names_match='true'
+          echo 'Project and package names are identical ✅'
         else
-          NAMES_MATCH="false"
-          echo "Project and package names are NOT identical ⚠️"
+          names_match='false'
+          echo 'Project and package names are NOT identical ⚠️'
         fi
-        echo "project_match_package=$NAMES_MATCH" >> "$GITHUB_ENV"
-        echo "project_match_package=$NAMES_MATCH" >> "$GITHUB_OUTPUT"
+        echo "project_match_package=$names_match" >> "$GITHUB_ENV"
+        echo "project_match_package=$names_match" >> "$GITHUB_OUTPUT"
 
         # Compare project and repository names
         REPO_NAME=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}
-        if [ "${{ steps.project-naming.outputs.python_project_name }}" = \
+        if [ "${{ steps.project-name.outputs.python_project_name }}" = \
           "$REPO_NAME" ]; then
-          NAMES_MATCH="true"
-          echo "Project and repository names are identical ✅"
+          names_match="true"
+          echo 'Project and repository names are identical ✅'
         else
-          NAMES_MATCH="true"
-          echo "Project and repository names are NOT identical ⚠️"
+          names_match='true'
+          echo 'Project and repository names are NOT identical ⚠️'
         fi
-        echo "project_match_repo=$NAMES_MATCH" >> "$GITHUB_ENV"
-        echo "project_match_repo=$NAMES_MATCH" >> "$GITHUB_OUTPUT"
+        echo "project_match_repo=$names_match" >> "$GITHUB_ENV"
+        echo "project_match_repo=$names_match" >> "$GITHUB_OUTPUT"
 
-    - name: "Determine versioning type [static|dynamic]"
+    - name: 'Determine versioning type [static|dynamic]'
       if: steps.project-toml.outputs.type == 'file'
       id: dynamic-versioning
       # yamllint disable-line rule:line-length
-      uses: lfreleng-actions/python-dynamic-version-action@f645b6d3c3a64709d598b3cd54d5766a0469fb44 # v0.1.5
+      uses: lfreleng-actions/python-dynamic-version-action@757278a7dce3add2c777305e7ec61d9e2b97ed7e # v0.1.6
       with:
-        path_prefix: "${{ env.path_prefix }}"
+        path_prefix: "${{ inputs.path_prefix }}"
 
-    - name: "Get project supported Python versions"
+    - name: 'Get project supported Python versions'
       id: supported-python-versions
       # yamllint disable-line rule:line-length
       uses: lfreleng-actions/python-supported-versions-action@011ec4085152a59eb60acf06e1da0e023feebaad # v0.1.5
       with:
-        path_prefix: "${{ env.path_prefix }}"
+        path_prefix: "${{ inputs.path_prefix }}"
 
-    - name: "Display summary output"
+    - name: 'Display summary output'
       shell: bash
       # yamllint disable rule:line-length
       run: |
         # Display summary output
-        echo "### Project Information" >> "$GITHUB_STEP_SUMMARY"
+        echo '### Project Information' >> "$GITHUB_STEP_SUMMARY"
 
-        echo "| Key | Value |" >> "$GITHUB_STEP_SUMMARY"
-        echo "| ----------------- | ------- |" >> "$GITHUB_STEP_SUMMARY"
-        echo "| Metadata source | ${{ steps.project-naming.outputs.python_project_file }} |" >> "$GITHUB_STEP_SUMMARY"
-        echo "| Project name | ${{ steps.project-naming.outputs.python_project_name }} |" >> "$GITHUB_STEP_SUMMARY"
-        echo "| Package name | ${{ steps.project-naming.outputs.python_package_name }} |" >> "$GITHUB_STEP_SUMMARY"
+        echo '| Key | Value |' >> "$GITHUB_STEP_SUMMARY"
+        echo '| ----------------- | ------- |' >> "$GITHUB_STEP_SUMMARY"
+        echo "| Metadata source | ${{ steps.project-name.outputs.python_project_file }} |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| Project name | ${{ steps.project-name.outputs.python_project_name }} |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| Project version | ${{ steps.project-version.outputs.python_project_version }} |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| Package name | ${{ steps.project-name.outputs.python_package_name }} |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| Build Python | ${{ steps.supported-python-versions.outputs.build_python }} |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| Matrix JSON | ${{ steps.supported-python-versions.outputs.matrix_json }} |" >> "$GITHUB_STEP_SUMMARY"
         if [ "${{ steps.project-toml.outputs.type }}" = "file" ]; then
           echo "| Dynamic versioning | ${{ steps.dynamic-versioning.outputs.dynamic_version }} |" >> "$GITHUB_STEP_SUMMARY"
         fi
-        echo "| Build Python | ${{ steps.supported-python-versions.outputs.build_python }} |" \
-          >> "$GITHUB_STEP_SUMMARY"
-        echo "| Matrix JSON | ${{ steps.supported-python-versions.outputs.matrix_json }} |" \
-          >> "$GITHUB_STEP_SUMMARY"
