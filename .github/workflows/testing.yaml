@@ -3,41 +3,45 @@
 # SPDX-FileCopyrightText: 2025 The Linux Foundation
 
 # Action test/validation workflow
-name: "Test GitHub Action 🧪"
+name: 'Test GitHub Action 🧪'
 
 # yamllint disable-line rule:truthy
 on:
   workflow_dispatch:
   push:
-    branches: ["main"]
+    branches: ['main']
   pull_request:
-    branches: ["main"]
+    branches: ['main']
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
 
 permissions: {}
 
 jobs:
   ### Test the GitHub Action in this Repository ###
   tests:
-    name: "Action Testing"
-    runs-on: ubuntu-24.04
+    name: 'Action Testing'
+    runs-on: 'ubuntu-24.04'
     permissions:
       contents: read
     steps:
-      - name: "Checkout repository"
+      - name: 'Checkout repository'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       # Perform setup prior to running test(s)
-      - name: "Checkout sample project repository"
+      - name: 'Checkout sample project repository'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          repository: "lfreleng-actions/test-python-project"
-          path: "test-python-project"
+          repository: 'lfreleng-actions/test-python-project'
+          path: 'test-python-project'
 
       - name: "Run action: ${{ github.repository }}"
         id: testing
         uses: ./
         with:
-          path_prefix: "test-python-project/"
+          path_prefix: 'test-python-project'
 
       - name: "Validate action output: ${{ github.repository }}"
         shell: bash
@@ -45,28 +49,28 @@ jobs:
           # Validate Action Output
           if [ "${{ steps.testing.outputs.python_project_file }}" \
             != "pyproject.toml" ]; then
-            echo "Unexpected return value for: python_project_file ❌"
+            echo 'Unexpected return value for: python_project_file ❌'
             echo "Returned: ${{ steps.testing.outputs.python_project_file }}"
-            echo "Expected: pyproject.toml"
-            ERROR="true"
+            echo 'Expected: pyproject.toml'
+            ERROR='true'
           fi
           if [ "${{ steps.testing.outputs.python_project_name }}" \
-            != "lfreleng-test-python-project" ]; then
-            echo "Unexpected return value for: python_project_name ❌"
+            != 'lfreleng-test-python-project' ]; then
+            echo 'Unexpected return value for: python_project_name ❌'
             echo "Returned: ${{ steps.testing.outputs.python_project_name }}"
-            echo "Expected: lfreleng-test-python-project"
-            ERROR="true"
+            echo 'Expected: lfreleng-test-python-project'
+            ERROR='true'
           fi
           if [ "${{ steps.testing.outputs.python_package_name }}" \
-            != "lfreleng_test_python_project" ]; then
-            echo "Unexpected return value for: python_package_name ❌"
+            != 'lfreleng_test_python_project' ]; then
+            echo 'Unexpected return value for: python_package_name ❌'
             echo "Returned: ${{ steps.testing.outputs.python_project_name }}"
-            echo "Expected: lfreleng_test_python_project"
-            ERROR="true"
+            echo 'Expected: lfreleng_test_python_project'
+            ERROR='true'
           fi
-          if [ "$ERROR" != "true" ]; then
-            echo "All tests passed ✅"
+          if [ "$ERROR" != 'true' ]; then
+            echo 'All tests passed ✅'
           else
-            echo "At least one test failed ❌"
+            echo 'At least one test failed ❌'
             exit 1
           fi
