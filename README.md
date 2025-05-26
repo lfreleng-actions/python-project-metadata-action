@@ -14,7 +14,7 @@ Extracts Python project metadata from a repository.
 <!-- markdownlint-disable MD013 -->
 
 ```yaml
-  - name: "Get Python project metadata"
+  - name: 'Get Python project metadata'
     uses: lfreleng-actions/python-project-metadata-action@main
 ```
 
@@ -26,22 +26,23 @@ Extracts Python project metadata from a repository.
 
 | Variable Name       | Required | Description                           |
 | ------------------- | -------- | ------------------------------------- |
-| PATH_PREFIX         | False    | Path/directory to Python project code |
+| path_prefix         | False    | Path/directory to Python project code |
 
 ## Outputs
 
 <!-- markdownlint-disable MD013 -->
 
-| Variable Name         | Description                                              |
-| --------------------- | -------------------------------------------------------- |
-| PYTHON_PROJECT_FILE   | File used to define/describe the project                 |
-| PYTHON_PROJECT_NAME   | The name of the Python project                           |
-| PYTHON_PACKAGE_NAME   | The name of the Python package                           |
-| PROJECT_MATCH_PACKAGE | Set true when the project and package name match         |
-| PROJECT_MATCH_REPO    | Set true when the project name and repository name match |
-| VERSIONING_TYPE       | Can be either static or dynamic (determined by tags)     |
-| BUILD_PYTHON          | Most recent Python version supported by project          |
-| MATRIX_JSON           | All Python versions supported by project as JSON string  |
+| Variable Name          | Description                                              |
+| ---------------------- | -------------------------------------------------------- |
+| python_project_file    | File used to define/describe the project                 |
+| python_project_name    | The name of the Python project                           |
+| python_project_version | The name of the Python project                           |
+| python_package_name    | The name of the Python package                           |
+| project_match_package  | Set true when the project and package name match         |
+| project_match_repo     | Set true when the project name and repository name match |
+| versioning_type        | Can be either static or dynamic (determined by tags)     |
+| build_python           | Most recent Python version supported by project          |
+| matrix_json            | All Python versions supported by project as JSON string  |
 
 <!-- markdownlint-enable MD013 -->
 
