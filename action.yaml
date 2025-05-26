@@ -68,7 +68,7 @@ runs:
     - name: 'Extract Python project version'
       id: project-version
       # yamllint disable-line rule:line-length
-      uses: modeseven-lfreleng-actions/python-project-version-action@update-action # ToDo: Testing
+      uses: lfreleng-actions/python-project-version-action@9c74e1e9686c9b16cc8e5ba3621efe616703d965 # v0.1.4
       with:
         path_prefix: "${{ inputs.path_prefix }}"
 
