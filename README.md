@@ -36,11 +36,11 @@ Extracts Python project metadata from a repository.
 | ---------------------- | -------------------------------------------------------- |
 | python_project_file    | File used to define/describe the project                 |
 | python_project_name    | The name of the Python project                           |
+| versioning_type        | Can be either static or dynamic (determined by tags)     |
 | python_project_version | The name of the Python project                           |
 | python_package_name    | The name of the Python package                           |
 | project_match_package  | Set true when the project and package name match         |
 | project_match_repo     | Set true when the project name and repository name match |
-| versioning_type        | Can be either static or dynamic (determined by tags)     |
 | build_python           | Most recent Python version supported by project          |
 | matrix_json            | All Python versions supported by project as JSON string  |
 

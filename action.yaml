@@ -22,6 +22,9 @@ outputs:
   python_project_name:
     description: "The name of the Python project"
     value: ${{ steps.project-name.outputs.python_project_name }}
+  versioning_type:
+    description: "Project supported Python versions as JSON"
+    value: ${{ steps.versioning.outputs.type }}
   python_project_version:
     description: "The version of the Python project"
     value: ${{ steps.project-version.outputs.python_project_version }}
@@ -35,9 +38,6 @@ outputs:
   project_match_repo:
     description: "Set true when the project name and repository name match"
     value: ${{ steps.compare.outputs.project_match_repo }}
-  versioning_type:
-    description: "Project supported Python versions as JSON"
-    value: ${{ steps.versioning-type.outputs.versioning_type }}
   matrix_json:
     description: "Project supported Python versions as JSON"
     value: ${{ steps.supported-python-versions.outputs.matrix_json }}
@@ -65,7 +65,29 @@ runs:
       with:
         path_prefix: "${{ inputs.path_prefix }}"
 
+    - name: 'Check if pyproject.toml uses dynamic versioning'
+      id: dyn-check
+      # yamllint disable-line rule:line-length
+      uses: lfreleng-actions/python-dynamic-version-action@757278a7dce3add2c777305e7ec61d9e2b97ed7e # v0.1.6
+      with:
+        path_prefix: "${{ inputs.path_prefix }}"
+
+    - name: 'Determine versioning type [static|dynamic]'
+      id: versioning
+      shell: bash
+      run: |
+        # Determine versioning type [static|dynamic]
+        if [ "${{ steps.dyn-check.outputs.dynamic_version }}" = 'true' ]; then
+          echo "type=dynamic" >> "$GITHUB_ENV"
+          echo "type=dynamic" >> "$GITHUB_OUTPUT"
+        else
+          echo 'Static versioning enabled ✅'
+          echo "type=static" >> "$GITHUB_ENV"
+          echo "type=static" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: 'Extract Python project version'
+      if: steps.dyn-check.outputs.dynamic_version == 'false'
       id: project-version
       # yamllint disable-line rule:line-length
       uses: lfreleng-actions/python-project-version-action@9c74e1e9686c9b16cc8e5ba3621efe616703d965 # v0.1.4
@@ -101,14 +123,6 @@ runs:
         echo "project_match_repo=$names_match" >> "$GITHUB_ENV"
         echo "project_match_repo=$names_match" >> "$GITHUB_OUTPUT"
 
-    - name: 'Determine versioning type [static|dynamic]'
-      if: steps.project-toml.outputs.type == 'file'
-      id: dynamic-versioning
-      # yamllint disable-line rule:line-length
-      uses: lfreleng-actions/python-dynamic-version-action@757278a7dce3add2c777305e7ec61d9e2b97ed7e # v0.1.6
-      with:
-        path_prefix: "${{ inputs.path_prefix }}"
-
     - name: 'Get project supported Python versions'
       id: supported-python-versions
       # yamllint disable-line rule:line-length
@@ -121,13 +135,21 @@ runs:
       # yamllint disable rule:line-length
       run: |
         # Display summary output
+
+        # Set displayed value based on static or dynamic versioning
+        if [ "${{ steps.versioning.outputs.type }}" = "dynamic" ]; then
+          DISPLAY_VERSION='dynamic'
+        else
+          DISPLAY_VERSION="${{ steps.project-version.outputs.python_project_version }}"
+        fi
+
         echo '### Project Information' >> "$GITHUB_STEP_SUMMARY"
 
         echo '| Key | Value |' >> "$GITHUB_STEP_SUMMARY"
         echo '| ----------------- | ------- |' >> "$GITHUB_STEP_SUMMARY"
         echo "| Metadata source | ${{ steps.project-name.outputs.python_project_file }} |" >> "$GITHUB_STEP_SUMMARY"
         echo "| Project name | ${{ steps.project-name.outputs.python_project_name }} |" >> "$GITHUB_STEP_SUMMARY"
-        echo "| Project version | ${{ steps.project-version.outputs.python_project_version }} |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| Project version | "$DISPLAY_VERSION" |" >> "$GITHUB_STEP_SUMMARY"
         echo "| Package name | ${{ steps.project-name.outputs.python_package_name }} |" >> "$GITHUB_STEP_SUMMARY"
         echo "| Build Python | ${{ steps.supported-python-versions.outputs.build_python }} |" >> "$GITHUB_STEP_SUMMARY"
         echo "| Matrix JSON | ${{ steps.supported-python-versions.outputs.matrix_json }} |" >> "$GITHUB_STEP_SUMMARY"
