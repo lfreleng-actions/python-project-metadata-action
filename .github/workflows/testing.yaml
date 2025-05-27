@@ -38,33 +38,61 @@ jobs:
           path: 'test-python-project'
 
       - name: "Run action: ${{ github.repository }}"
-        id: testing
+        id: test-static
+        uses: ./
+        with:
+          path_prefix: 'test-python-project'
+
+      - name: "Update pyproject.toml for dynamic versioning"
+        shell: bash
+        run: |
+          # Update pyproject.toml for dynamic versioning
+          echo "Copying dynamic pyproject.toml to test-python-project"
+          cp resources/dynamic-pyproject.toml test-python-project/pyproject.toml
+
+      - name: "Run action: ${{ github.repository }}"
+        id: test-dynamic
         uses: ./
         with:
           path_prefix: 'test-python-project'
 
       - name: "Validate action output: ${{ github.repository }}"
         shell: bash
+        # yamllint disable rule:line-length
         run: |
           # Validate Action Output
-          if [ "${{ steps.testing.outputs.python_project_file }}" \
+          if [ "${{ steps.test-static.outputs.python_project_file }}" \
             != "pyproject.toml" ]; then
             echo 'Unexpected return value for: python_project_file ❌'
-            echo "Returned: ${{ steps.testing.outputs.python_project_file }}"
+            echo "Returned: ${{ steps.test-static.outputs.python_project_file }}"
             echo 'Expected: pyproject.toml'
             ERROR='true'
           fi
-          if [ "${{ steps.testing.outputs.python_project_name }}" \
+          if [ "${{ steps.test-static.outputs.versioning_type }}" \
+            != "static" ]; then
+            echo 'Unexpected return value for: versioning_type ❌'
+            echo "Returned: ${{ steps.test-static.outputs.versioning_type }}"
+            echo 'Expected: static'
+            ERROR='true'
+          fi
+          if [ "${{ steps.test-dynamic.outputs.versioning_type }}" \
+            != "dynamic" ]; then
+            echo 'Unexpected return value for: versioning_type ❌'
+            echo "Returned: ${{ steps.test-dynamic.outputs.versioning_type }}"
+            echo 'Expected: dynamic'
+            ERROR='true'
+          fi
+          if [ "${{ steps.test-static.outputs.python_project_name }}" \
             != 'lfreleng-test-python-project' ]; then
             echo 'Unexpected return value for: python_project_name ❌'
-            echo "Returned: ${{ steps.testing.outputs.python_project_name }}"
+            echo "Returned: ${{ steps.test-static.outputs.python_project_name }}"
             echo 'Expected: lfreleng-test-python-project'
             ERROR='true'
           fi
-          if [ "${{ steps.testing.outputs.python_package_name }}" \
+          if [ "${{ steps.test-static.outputs.python_package_name }}" \
             != 'lfreleng_test_python_project' ]; then
             echo 'Unexpected return value for: python_package_name ❌'
-            echo "Returned: ${{ steps.testing.outputs.python_project_name }}"
+            echo "Returned: ${{ steps.test-static.outputs.python_project_name }}"
             echo 'Expected: lfreleng_test_python_project'
             ERROR='true'
           fi
