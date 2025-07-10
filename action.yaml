@@ -126,7 +126,7 @@ runs:
     - name: 'Get project supported Python versions'
       id: supported-python-versions
       # yamllint disable-line rule:line-length
-      uses: lfreleng-actions/python-supported-versions-action@011ec4085152a59eb60acf06e1da0e023feebaad # v0.1.5
+      uses: lfreleng-actions/python-supported-versions-action@14c5f9025a652062849adb771ff75da771886732 # v0.1.6
       with:
         path_prefix: "${{ inputs.path_prefix }}"
 
