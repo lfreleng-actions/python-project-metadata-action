@@ -37,6 +37,15 @@ jobs:
           repository: 'lfreleng-actions/test-python-project'
           path: 'test-python-project'
 
+      - name: 'Setup static version fixture for testing'
+        shell: bash
+        run: |
+          # Setup static version fixture for testing
+          # test-python-project now uses dynamic versioning;
+          # copy static variation for metadata extraction test
+          cp test-python-project/variations/static-eol.toml \
+            test-python-project/pyproject.toml
+
       - name: "Run action: ${{ github.repository }}"
         id: test-static
         uses: ./
