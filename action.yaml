@@ -60,7 +60,7 @@ runs:
     - name: 'Extract Python project name'
       id: project-name
       # yamllint disable-line rule:line-length
-      uses: lfreleng-actions/python-project-name-action@a8287d8627a34a40aacc33f73348dfb0b47b6cea # v0.1.5
+      uses: lfreleng-actions/python-project-name-action@9f2cc7d37847d5f5497ba87d14e574b2f0a07462 # v0.1.6
       with:
         path_prefix: "${{ inputs.path_prefix }}"
 
@@ -125,7 +125,7 @@ runs:
     - name: 'Get project supported Python versions'
       id: supported-python-versions
       # yamllint disable-line rule:line-length
-      uses: lfreleng-actions/python-supported-versions-action@55afbeffb9162574b10f8c6f89c3ba931db77c0f # v0.1.11
+      uses: lfreleng-actions/python-supported-versions-action@78063d3b1de85859b934d1740036fa3bf3e6c45f # v0.2.0
       with:
         path_prefix: "${{ inputs.path_prefix }}"
 
