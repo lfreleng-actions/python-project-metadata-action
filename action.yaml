@@ -116,7 +116,7 @@ runs:
           names_match="true"
           echo 'Project and repository names are identical ✅'
         else
-          names_match='true'
+          names_match='false'
           echo 'Project and repository names are NOT identical ⚠️'
         fi
         echo "project_match_repo=$names_match" >> "$GITHUB_ENV"
@@ -152,6 +152,6 @@ runs:
         echo "| Package name | ${{ steps.project-name.outputs.python_package_name }} |" >> "$GITHUB_STEP_SUMMARY"
         echo "| Build Python | ${{ steps.supported-python-versions.outputs.build_python }} |" >> "$GITHUB_STEP_SUMMARY"
         echo "| Matrix JSON | ${{ steps.supported-python-versions.outputs.matrix_json }} |" >> "$GITHUB_STEP_SUMMARY"
-        if [ "${{ steps.project-toml.outputs.type }}" = "file" ]; then
-          echo "| Dynamic versioning | ${{ steps.dynamic-versioning.outputs.dynamic_version }} |" >> "$GITHUB_STEP_SUMMARY"
+        if [ "${{ steps.dyn-check.outputs.dynamic_version }}" != '' ]; then
+          echo "| Dynamic versioning | ${{ steps.dyn-check.outputs.dynamic_version }} |" >> "$GITHUB_STEP_SUMMARY"
         fi
