@@ -49,11 +49,13 @@ runs:
   steps:
     - name: 'Setup action/environment'
       shell: bash
+      env:
+        INPUT_PATH_PREFIX: ${{ inputs.path_prefix }}
       run: |
         # Setup action/environment
 
         # Verify path_prefix a valid directory path
-        if [ ! -d "${{ inputs.path_prefix }}" ]; then
+        if [ ! -d "$INPUT_PATH_PREFIX" ]; then
           echo 'Error: invalid path/prefix to project directory ❌'; exit 1
         fi
 
@@ -77,11 +79,9 @@ runs:
       run: |
         # Determine versioning type [static|dynamic]
         if [ "${{ steps.dyn-check.outputs.dynamic_version }}" = 'true' ]; then
-          echo "type=dynamic" >> "$GITHUB_ENV"
           echo "type=dynamic" >> "$GITHUB_OUTPUT"
         else
           echo 'Static versioning enabled ✅'
-          echo "type=static" >> "$GITHUB_ENV"
           echo "type=static" >> "$GITHUB_OUTPUT"
         fi
 
@@ -106,7 +106,6 @@ runs:
           names_match='false'
           echo 'Project and package names are NOT identical ⚠️'
         fi
-        echo "project_match_package=$names_match" >> "$GITHUB_ENV"
         echo "project_match_package=$names_match" >> "$GITHUB_OUTPUT"
 
         # Compare project and repository names
@@ -119,7 +118,6 @@ runs:
           names_match='false'
           echo 'Project and repository names are NOT identical ⚠️'
         fi
-        echo "project_match_repo=$names_match" >> "$GITHUB_ENV"
         echo "project_match_repo=$names_match" >> "$GITHUB_OUTPUT"
 
     - name: 'Get project supported Python versions'
