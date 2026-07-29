@@ -74,38 +74,38 @@ jobs:
         # yamllint disable rule:line-length
         run: |
           # Validate Action Output
-          if [ "${{ steps.test-static.outputs.python_project_file }}" \
+          if [ "${STEPS_TEST_STATIC_OUTPUTS_PYTHON_PROJECT_FILE}" \
             != "pyproject.toml" ]; then
             echo 'Unexpected return value for: python_project_file ❌'
-            echo "Returned: ${{ steps.test-static.outputs.python_project_file }}"
+            echo "Returned: ${STEPS_TEST_STATIC_OUTPUTS_PYTHON_PROJECT_FILE}"
             echo 'Expected: pyproject.toml'
             ERROR='true'
           fi
-          if [ "${{ steps.test-static.outputs.versioning_type }}" \
+          if [ "${STEPS_TEST_STATIC_OUTPUTS_VERSIONING_TYPE}" \
             != "static" ]; then
             echo 'Unexpected return value for: versioning_type ❌'
-            echo "Returned: ${{ steps.test-static.outputs.versioning_type }}"
+            echo "Returned: ${STEPS_TEST_STATIC_OUTPUTS_VERSIONING_TYPE}"
             echo 'Expected: static'
             ERROR='true'
           fi
-          if [ "${{ steps.test-dynamic.outputs.versioning_type }}" \
+          if [ "${STEPS_TEST_DYNAMIC_OUTPUTS_VERSIONING_TYPE}" \
             != "dynamic" ]; then
             echo 'Unexpected return value for: versioning_type ❌'
-            echo "Returned: ${{ steps.test-dynamic.outputs.versioning_type }}"
+            echo "Returned: ${STEPS_TEST_DYNAMIC_OUTPUTS_VERSIONING_TYPE}"
             echo 'Expected: dynamic'
             ERROR='true'
           fi
-          if [ "${{ steps.test-static.outputs.python_project_name }}" \
+          if [ "${STEPS_TEST_STATIC_OUTPUTS_PYTHON_PROJECT_NAME}" \
             != 'lfreleng-test-python-project' ]; then
             echo 'Unexpected return value for: python_project_name ❌'
-            echo "Returned: ${{ steps.test-static.outputs.python_project_name }}"
+            echo "Returned: ${STEPS_TEST_STATIC_OUTPUTS_PYTHON_PROJECT_NAME}"
             echo 'Expected: lfreleng-test-python-project'
             ERROR='true'
           fi
-          if [ "${{ steps.test-static.outputs.python_package_name }}" \
+          if [ "${STEPS_TEST_STATIC_OUTPUTS_PYTHON_PACKAGE_NAME}" \
             != 'lfreleng_test_python_project' ]; then
             echo 'Unexpected return value for: python_package_name ❌'
-            echo "Returned: ${{ steps.test-static.outputs.python_project_name }}"
+            echo "Returned: ${STEPS_TEST_STATIC_OUTPUTS_PYTHON_PACKAGE_NAME}"
             echo 'Expected: lfreleng_test_python_project'
             ERROR='true'
           fi
@@ -115,3 +115,9 @@ jobs:
             echo 'At least one test failed ❌'
             exit 1
           fi
+        env:
+          STEPS_TEST_STATIC_OUTPUTS_PYTHON_PROJECT_FILE: ${{ steps.test-static.outputs.python_project_file }}
+          STEPS_TEST_STATIC_OUTPUTS_VERSIONING_TYPE: ${{ steps.test-static.outputs.versioning_type }}
+          STEPS_TEST_DYNAMIC_OUTPUTS_VERSIONING_TYPE: ${{ steps.test-dynamic.outputs.versioning_type }}
+          STEPS_TEST_STATIC_OUTPUTS_PYTHON_PROJECT_NAME: ${{ steps.test-static.outputs.python_project_name }}
+          STEPS_TEST_STATIC_OUTPUTS_PYTHON_PACKAGE_NAME: ${{ steps.test-static.outputs.python_package_name }}

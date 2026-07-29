@@ -78,12 +78,15 @@ runs:
       shell: bash
       run: |
         # Determine versioning type [static|dynamic]
-        if [ "${{ steps.dyn-check.outputs.dynamic_version }}" = 'true' ]; then
+        if [ "${STEPS_DYN_CHECK_OUTPUTS_DYNAMIC_VERSION}" = 'true' ]; then
           echo "type=dynamic" >> "$GITHUB_OUTPUT"
         else
           echo 'Static versioning enabled ✅'
           echo "type=static" >> "$GITHUB_OUTPUT"
         fi
+      env:
+        # yamllint disable-line rule:line-length
+        STEPS_DYN_CHECK_OUTPUTS_DYNAMIC_VERSION: ${{ steps.dyn-check.outputs.dynamic_version }}
 
     - name: 'Extract Python project version'
       if: steps.dyn-check.outputs.dynamic_version == 'false'
@@ -98,8 +101,8 @@ runs:
       shell: bash
       run: |
         # Compare project and package names
-        if [ "${{ steps.project-name.outputs.python_project_name }}" = \
-          "${{ steps.project-name.outputs.python_package_name }}" ]; then
+        if [ "${STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PROJECT_NAME}" = \
+          "${STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PACKAGE_NAME}" ]; then
           names_match='true'
           echo 'Project and package names are identical ✅'
         else
@@ -110,7 +113,7 @@ runs:
 
         # Compare project and repository names
         REPO_NAME=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}
-        if [ "${{ steps.project-name.outputs.python_project_name }}" = \
+        if [ "${STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PROJECT_NAME}" = \
           "$REPO_NAME" ]; then
           names_match="true"
           echo 'Project and repository names are identical ✅'
@@ -119,6 +122,11 @@ runs:
           echo 'Project and repository names are NOT identical ⚠️'
         fi
         echo "project_match_repo=$names_match" >> "$GITHUB_OUTPUT"
+      env:
+        # yamllint disable-line rule:line-length
+        STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PROJECT_NAME: ${{ steps.project-name.outputs.python_project_name }}
+        # yamllint disable-line rule:line-length
+        STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PACKAGE_NAME: ${{ steps.project-name.outputs.python_package_name }}
 
     - name: 'Get project supported Python versions'
       id: supported-python-versions
@@ -134,22 +142,31 @@ runs:
         # Display summary output
 
         # Set displayed value based on static or dynamic versioning
-        if [ "${{ steps.versioning.outputs.type }}" = "dynamic" ]; then
+        if [ "${STEPS_VERSIONING_OUTPUTS_TYPE}" = "dynamic" ]; then
           DISPLAY_VERSION='dynamic'
         else
-          DISPLAY_VERSION="${{ steps.project-version.outputs.python_project_version }}"
+          DISPLAY_VERSION="${STEPS_PROJECT_VERSION_OUTPUTS_PYTHON_PROJECT_VERSION}"
         fi
 
         echo '### Project Information' >> "$GITHUB_STEP_SUMMARY"
 
         echo '| Key | Value |' >> "$GITHUB_STEP_SUMMARY"
         echo '| ----------------- | ------- |' >> "$GITHUB_STEP_SUMMARY"
-        echo "| Metadata source | ${{ steps.project-name.outputs.python_project_file }} |" >> "$GITHUB_STEP_SUMMARY"
-        echo "| Project name | ${{ steps.project-name.outputs.python_project_name }} |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| Metadata source | ${STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PROJECT_FILE} |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| Project name | ${STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PROJECT_NAME} |" >> "$GITHUB_STEP_SUMMARY"
         echo "| Project version | "$DISPLAY_VERSION" |" >> "$GITHUB_STEP_SUMMARY"
-        echo "| Package name | ${{ steps.project-name.outputs.python_package_name }} |" >> "$GITHUB_STEP_SUMMARY"
-        echo "| Build Python | ${{ steps.supported-python-versions.outputs.build_python }} |" >> "$GITHUB_STEP_SUMMARY"
-        echo "| Matrix JSON | ${{ steps.supported-python-versions.outputs.matrix_json }} |" >> "$GITHUB_STEP_SUMMARY"
-        if [ "${{ steps.dyn-check.outputs.dynamic_version }}" != '' ]; then
-          echo "| Dynamic versioning | ${{ steps.dyn-check.outputs.dynamic_version }} |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| Package name | ${STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PACKAGE_NAME} |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| Build Python | ${STEPS_SUPPORTED_PYTHON_VERSIONS_OUTPUTS_BUILD_PYTHON} |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| Matrix JSON | ${STEPS_SUPPORTED_PYTHON_VERSIONS_OUTPUTS_MATRIX_JSON} |" >> "$GITHUB_STEP_SUMMARY"
+        if [ "${STEPS_DYN_CHECK_OUTPUTS_DYNAMIC_VERSION}" != '' ]; then
+          echo "| Dynamic versioning | ${STEPS_DYN_CHECK_OUTPUTS_DYNAMIC_VERSION} |" >> "$GITHUB_STEP_SUMMARY"
         fi
+      env:
+        STEPS_VERSIONING_OUTPUTS_TYPE: ${{ steps.versioning.outputs.type }}
+        STEPS_PROJECT_VERSION_OUTPUTS_PYTHON_PROJECT_VERSION: ${{ steps.project-version.outputs.python_project_version }}
+        STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PROJECT_FILE: ${{ steps.project-name.outputs.python_project_file }}
+        STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PROJECT_NAME: ${{ steps.project-name.outputs.python_project_name }}
+        STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PACKAGE_NAME: ${{ steps.project-name.outputs.python_package_name }}
+        STEPS_SUPPORTED_PYTHON_VERSIONS_OUTPUTS_BUILD_PYTHON: ${{ steps.supported-python-versions.outputs.build_python }}
+        STEPS_SUPPORTED_PYTHON_VERSIONS_OUTPUTS_MATRIX_JSON: ${{ steps.supported-python-versions.outputs.matrix_json }}
+        STEPS_DYN_CHECK_OUTPUTS_DYNAMIC_VERSION: ${{ steps.dyn-check.outputs.dynamic_version }}
