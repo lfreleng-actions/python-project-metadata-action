@@ -52,7 +52,7 @@ jobs:
 
       - name: "Run action: ${{ github.repository }}"
         id: test-static
-        uses: ./
+        uses: $/
         with:
           path_prefix: 'test-python-project'
 
@@ -65,7 +65,7 @@ jobs:
 
       - name: "Run action: ${{ github.repository }}"
         id: test-dynamic
-        uses: ./
+        uses: $/
         with:
           path_prefix: 'test-python-project'
 
