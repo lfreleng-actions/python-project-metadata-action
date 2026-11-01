@@ -92,7 +92,7 @@ runs:
       if: steps.dyn-check.outputs.dynamic_version == 'false'
       id: project-version
       # yamllint disable-line rule:line-length
-      uses: lfreleng-actions/python-project-version-action@244ce8a70402ff692657917d731bb6a571dbc334 # v0.3.0
+      uses: lfreleng-actions/python-project-version-action@8ef5de07a5a22fb5325940865e595dfeb9624dc8  # v0.3.1
       with:
         path_prefix: "${{ inputs.path_prefix }}"
 
@@ -131,7 +131,7 @@ runs:
     - name: 'Get project supported Python versions'
       id: supported-python-versions
       # yamllint disable-line rule:line-length
-      uses: lfreleng-actions/python-supported-versions-action@c80c31845201ed5be701999f3e63a85aeb021d57 # v0.3.1
+      uses: lfreleng-actions/python-supported-versions-action@8eb4ab82a1240088d233a0a6df5580b9ed505670  # v0.3.2
       with:
         path_prefix: "${{ inputs.path_prefix }}"
 
