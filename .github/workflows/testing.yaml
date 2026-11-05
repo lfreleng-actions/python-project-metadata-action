@@ -109,6 +109,19 @@ jobs:
             echo 'Expected: lfreleng_test_python_project'
             ERROR='true'
           fi
+          if ! [[ "${STEPS_TEST_STATIC_OUTPUTS_BUILD_PYTHON_VERSION}" =~ ^3\.[0-9]+$ ]]; then
+            echo 'Unexpected return value for: build_python_version ❌'
+            echo "Returned: ${STEPS_TEST_STATIC_OUTPUTS_BUILD_PYTHON_VERSION}"
+            echo 'Expected: a 3.N version string'
+            ERROR='true'
+          fi
+          if ! jq -e '(.["python-version"] | type == "array" and length > 0)' \
+            <<< "${STEPS_TEST_STATIC_OUTPUTS_MATRIX_JSON}" > /dev/null 2>&1; then
+            echo 'Unexpected return value for: matrix_json ❌'
+            echo "Returned: ${STEPS_TEST_STATIC_OUTPUTS_MATRIX_JSON}"
+            echo 'Expected: JSON with a non-empty python-version array'
+            ERROR='true'
+          fi
           if [ "$ERROR" != 'true' ]; then
             echo 'All tests passed ✅'
           else
@@ -121,3 +134,5 @@ jobs:
           STEPS_TEST_DYNAMIC_OUTPUTS_VERSIONING_TYPE: ${{ steps.test-dynamic.outputs.versioning_type }}
           STEPS_TEST_STATIC_OUTPUTS_PYTHON_PROJECT_NAME: ${{ steps.test-static.outputs.python_project_name }}
           STEPS_TEST_STATIC_OUTPUTS_PYTHON_PACKAGE_NAME: ${{ steps.test-static.outputs.python_package_name }}
+          STEPS_TEST_STATIC_OUTPUTS_BUILD_PYTHON_VERSION: ${{ steps.test-static.outputs.build_python_version }}
+          STEPS_TEST_STATIC_OUTPUTS_MATRIX_JSON: ${{ steps.test-static.outputs.matrix_json }}

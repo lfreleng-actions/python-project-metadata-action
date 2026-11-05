@@ -42,7 +42,7 @@ outputs:
     value: ${{ steps.supported-python-versions.outputs.matrix_json }}
   build_python_version:
     description: "Python version to use for build (creates artefacts)"
-    value: "${{ steps.supported-python-versions.outputs.build_python }}"
+    value: "${{ steps.supported-python-versions.outputs.latest }}"
 
 runs:
   using: 'composite'
@@ -131,8 +131,9 @@ runs:
     - name: 'Get project supported Python versions'
       id: supported-python-versions
       # yamllint disable-line rule:line-length
-      uses: lfreleng-actions/python-supported-versions-action@8eb4ab82a1240088d233a0a6df5580b9ed505670  # v0.3.2
+      uses: lfreleng-actions/supported-versions-action@03b92a8beb19378d01f3bb473653dfc2c9adc834  # v0.0.1
       with:
+        tool: python
         path_prefix: "${{ inputs.path_prefix }}"
 
     - name: 'Display summary output'
@@ -156,7 +157,7 @@ runs:
         echo "| Project name | ${STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PROJECT_NAME} |" >> "$GITHUB_STEP_SUMMARY"
         echo "| Project version | "$DISPLAY_VERSION" |" >> "$GITHUB_STEP_SUMMARY"
         echo "| Package name | ${STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PACKAGE_NAME} |" >> "$GITHUB_STEP_SUMMARY"
-        echo "| Build Python | ${STEPS_SUPPORTED_PYTHON_VERSIONS_OUTPUTS_BUILD_PYTHON} |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| Build Python | ${STEPS_SUPPORTED_PYTHON_VERSIONS_OUTPUTS_LATEST} |" >> "$GITHUB_STEP_SUMMARY"
         echo "| Matrix JSON | ${STEPS_SUPPORTED_PYTHON_VERSIONS_OUTPUTS_MATRIX_JSON} |" >> "$GITHUB_STEP_SUMMARY"
         if [ "${STEPS_DYN_CHECK_OUTPUTS_DYNAMIC_VERSION}" != '' ]; then
           echo "| Dynamic versioning | ${STEPS_DYN_CHECK_OUTPUTS_DYNAMIC_VERSION} |" >> "$GITHUB_STEP_SUMMARY"
@@ -167,6 +168,6 @@ runs:
         STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PROJECT_FILE: ${{ steps.project-name.outputs.python_project_file }}
         STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PROJECT_NAME: ${{ steps.project-name.outputs.python_project_name }}
         STEPS_PROJECT_NAME_OUTPUTS_PYTHON_PACKAGE_NAME: ${{ steps.project-name.outputs.python_package_name }}
-        STEPS_SUPPORTED_PYTHON_VERSIONS_OUTPUTS_BUILD_PYTHON: ${{ steps.supported-python-versions.outputs.build_python }}
+        STEPS_SUPPORTED_PYTHON_VERSIONS_OUTPUTS_LATEST: ${{ steps.supported-python-versions.outputs.latest }}
         STEPS_SUPPORTED_PYTHON_VERSIONS_OUTPUTS_MATRIX_JSON: ${{ steps.supported-python-versions.outputs.matrix_json }}
         STEPS_DYN_CHECK_OUTPUTS_DYNAMIC_VERSION: ${{ steps.dyn-check.outputs.dynamic_version }}
