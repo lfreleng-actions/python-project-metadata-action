@@ -69,7 +69,7 @@ runs:
     - name: 'Check if pyproject.toml uses dynamic versioning'
       id: dyn-check
       # yamllint disable-line rule:line-length
-      uses: lfreleng-actions/python-dynamic-version-action@21fcb7e8915b2ca0b495c1e6b54539ae30329a45 # v0.2.3
+      uses: lfreleng-actions/python-dynamic-version-action@c7c79d1c4cc6dddf2c4aea950abc7d75cd70eb67 # v0.2.4
       with:
         path_prefix: "${{ inputs.path_prefix }}"
 
