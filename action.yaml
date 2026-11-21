@@ -92,7 +92,7 @@ runs:
       if: steps.dyn-check.outputs.dynamic_version == 'false'
       id: project-version
       # yamllint disable-line rule:line-length
-      uses: lfreleng-actions/python-project-version-action@8ef5de07a5a22fb5325940865e595dfeb9624dc8  # v0.3.1
+      uses: lfreleng-actions/python-project-version-action@cdf354a351d32e10085a6966860eba199bc29744  # v0.3.3
       with:
         path_prefix: "${{ inputs.path_prefix }}"
 
